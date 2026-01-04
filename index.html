@@ -1,218 +1,218 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { CupSoda, Candy, Coffee, Cookie, Star, Users, CheckCircle, Flame, Droplets, Gift, Clock, Download, Handshake } from 'lucide-react';
-
-const RewardTier = ({ tokens, items, color, icon: Icon }) => {
-  return (
-    <div className={`flex flex-col h-full rounded-2xl border-2 overflow-hidden transition-all hover:shadow-lg ${color.border} ${color.bg}`}>
-      <div className={`p-4 flex items-center justify-between ${color.headerBg} text-white`}>
-        <div className="flex items-center gap-2">
-          <Icon size={24} />
-          <h2 className="text-xl font-bold uppercase tracking-wider">{tokens} {tokens === 1 ? 'Token' : 'Tokens'}</h2>
-        </div>
-      </div>
-      <div className="p-5 flex-grow">
-        <ul className="space-y-3">
-          {items.map((item, index) => (
-            <li key={index} className="flex items-start gap-2 text-gray-700 text-sm md:text-base">
-              <span className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${color.dot}`} />
-              <span className="font-medium">{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-const App = () => {
-  const chartRef = useRef(null);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  // Load html2canvas from CDN
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  const handleDownload = async () => {
-    if (!window.html2canvas) {
-      alert("Still loading image engine. Please try again in a second!");
-      return;
-    }
-
-    setIsDownloading(true);
-    try {
-      const canvas = await window.html2canvas(chartRef.current, {
-        scale: 2, // Higher quality
-        useCORS: true,
-        backgroundColor: '#f8fafc' // Matches slate-50
-      });
-      
-      const image = canvas.toDataURL("image/png");
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = "Werkheiser-Reward-Chart.png";
-      link.click();
-    } catch (err) {
-      console.error("Download failed", err);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const tiers = [
-    {
-      tokens: 1,
-      icon: Candy,
-      color: {
-        border: 'border-blue-100',
-        bg: 'bg-blue-50/30',
-        headerBg: 'bg-blue-600',
-        dot: 'bg-blue-500'
-      },
-      items: ['Fruit Snack', 'Mini Water', 'Piece of Candy']
-    },
-    {
-      tokens: 2,
-      icon: Coffee,
-      color: {
-        border: 'border-orange-100',
-        bg: 'bg-orange-50/30',
-        headerBg: 'bg-orange-500',
-        dot: 'bg-orange-500'
-      },
-      items: [
-        'Coffee',
-        'Hot Chocolate',
-        'Cappuccino',
-        'Tea (Coming Soon)',
-        'Chips (Variety Pack)',
-        'Cheez-Its',
-        'Takis',
-        'Doritos'
-      ]
-    },
-    {
-      tokens: 3,
-      icon: Cookie,
-      color: {
-        border: 'border-emerald-100',
-        bg: 'bg-emerald-50/30',
-        headerBg: 'bg-emerald-600',
-        dot: 'bg-emerald-500'
-      },
-      items: ['Nutrigrain Bar', 'Rice Krispie Treat', 'Pringles']
-    },
-    {
-      tokens: 5,
-      icon: Star,
-      color: {
-        border: 'border-purple-100',
-        bg: 'bg-purple-50/30',
-        headerBg: 'bg-purple-600',
-        dot: 'bg-purple-500'
-      },
-      items: [
-        'Classwork Assignment Excused',
-        '5 Bonus Points (Larger Assignment)'
-      ]
-    },
-    {
-      tokens: 10,
-      icon: Gift,
-      color: {
-        border: 'border-rose-100',
-        bg: 'bg-rose-50/30',
-        headerBg: 'bg-rose-600',
-        dot: 'bg-rose-500'
-      },
-      items: ['Full Brownie Tray']
-    },
-    {
-      tokens: 50,
-      icon: Users,
-      color: {
-        border: 'border-yellow-200',
-        bg: 'bg-yellow-50/40',
-        headerBg: 'bg-yellow-600',
-        dot: 'bg-yellow-600'
-      },
-      items: [
-        'WHOLE CLASS: Free Day',
-        'WHOLE CLASS: Brownie Party'
-      ]
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-100 py-6 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-6xl mx-auto">
-        {/* Control Panel (Not included in image) */}
-        <div className="flex justify-end mb-6 no-print">
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-md active:scale-95 disabled:opacity-50"
-          >
-            <Download size={18} />
-            {isDownloading ? 'Generating...' : 'Download as Image'}
-          </button>
-        </div>
-
-        {/* The Capture Area */}
-        <div ref={chartRef} className="bg-slate-50 p-8 rounded-3xl shadow-sm border border-slate-200">
-          <header className="text-center mb-10">
-            <div className="inline-flex items-center justify-center p-3 bg-yellow-100 rounded-full mb-4 shadow-sm">
-              <Flame className="text-yellow-600" size={40} />
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight mb-2">
-              WERKHEISER REWARDS
-            </h1>
-            <p className="text-slate-600 text-lg font-medium max-w-2xl mx-auto">
-              Redeem your tokens for snacks, perks, and class-wide celebrations!
-            </p>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {tiers.map((tier) => (
-              <RewardTier key={tier.tokens} {...tier} />
-            ))}
-          </div>
-
-          <footer className="mt-12 text-center border-t border-slate-200 pt-8">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-wrap justify-center gap-6">
-                <div className="flex items-center gap-2 text-slate-500">
-                  <Clock size={18} />
-                  <p className="text-sm font-semibold uppercase tracking-widest text-left">Redemption: <span className="font-normal capitalize tracking-normal italic block">See Mr. Werkheiser before/after class</span></p>
-                </div>
-                <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 shadow-sm">
-                  <Handshake size={20} />
-                  <p className="text-sm font-bold uppercase tracking-tight">Tokens are Transferable & Combinable!</p>
-                </div>
-              </div>
-              <p className="text-slate-400 text-xs italic">
-                Work together with your classmates to reach the high-tier rewards!
-              </p>
-            </div>
-          </footer>
-        </div>
-      </div>
-      
-      {/* Basic responsive style for print and capture */}
-      <style>{`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werkheiser Reward Chart</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons for visuals -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2canvas for image generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
         @media print {
-          .no-print { display: none !important; }
+            .no-print { display: none !important; }
         }
-      `}</style>
-    </div>
-  );
-};
+        
+        .reward-card {
+            transition: transform 0.2s ease, shadow 0.2s ease;
+        }
+        .reward-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen py-8 px-4">
 
-export default App;
+    <div class="max-w-6xl mx-auto">
+        <!-- Control Panel (Hidden when downloading image) -->
+        <div class="flex justify-end mb-6 no-print">
+            <button id="downloadBtn" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-full font-bold transition-all shadow-lg active:scale-95">
+                <i data-lucide="download" class="w-5 h-5"></i>
+                Download as Image
+            </button>
+        </div>
+
+        <!-- The Content Area to be Captured -->
+        <div id="captureArea" class="bg-slate-50 p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-slate-200">
+            
+            <header class="text-center mb-12">
+                <div class="inline-flex items-center justify-center p-4 bg-yellow-100 rounded-full mb-4 shadow-sm">
+                    <i data-lucide="flame" class="w-10 h-10 text-yellow-600"></i>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black text-slate-800 tracking-tight mb-3 uppercase">
+                    Werkheiser Rewards
+                </h1>
+                <p class="text-slate-600 text-lg md:text-xl font-medium max-w-2xl mx-auto">
+                    Redeem your tokens for snacks, academic perks, and class celebrations!
+                </p>
+            </header>
+
+            <!-- Rewards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                
+                <!-- 1 Token -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-blue-100 bg-blue-50/30 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-blue-600 text-white">
+                        <i data-lucide="candy" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">1 Token</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-3 font-semibold text-slate-700">
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>Fruit Snack</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>Mini Water</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>Piece of Candy</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2 Tokens -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-orange-100 bg-orange-50/30 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-orange-500 text-white">
+                        <i data-lucide="coffee" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">2 Tokens</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-3 font-semibold text-slate-700">
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>Coffee / Cappuccino</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>Hot Chocolate</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>Tea (Coming Soon)</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>Chips (Variety / Cheez-Its)</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>Takis or Doritos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 3 Tokens -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-emerald-100 bg-emerald-50/30 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-emerald-600 text-white">
+                        <i data-lucide="cookie" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">3 Tokens</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-3 font-semibold text-slate-700">
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>Nutrigrain Bar</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>Rice Krispie Treat</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>Pringles</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 5 Tokens -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-purple-100 bg-purple-50/30 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-purple-600 text-white">
+                        <i data-lucide="star" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">5 Tokens</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-3 font-semibold text-slate-700">
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>Classwork Assignment Excused</li>
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-purple-500 shrink-0"></span>5 Bonus Points (Larger Work)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 10 Tokens -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-rose-100 bg-rose-50/30 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-rose-600 text-white">
+                        <i data-lucide="gift" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">10 Tokens</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-3 font-semibold text-slate-700">
+                            <li class="flex gap-2 items-start"><span class="mt-2 w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>Full Brownie Tray</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 50 Tokens -->
+                <div class="reward-card flex flex-col h-full rounded-3xl border-2 border-yellow-200 bg-yellow-50/40 overflow-hidden shadow-sm">
+                    <div class="p-4 flex items-center gap-3 bg-yellow-600 text-white">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                        <h2 class="text-xl font-extrabold uppercase tracking-wider">50 Tokens</h2>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <ul class="space-y-4 font-bold text-slate-800">
+                            <li class="flex gap-3 items-center bg-white/60 p-2 rounded-lg border border-yellow-200">
+                                <i data-lucide="check-circle-2" class="text-yellow-600 w-5 h-5"></i>
+                                WHOLE CLASS: Free Day
+                            </li>
+                            <li class="flex gap-3 items-center bg-white/60 p-2 rounded-lg border border-yellow-200">
+                                <i data-lucide="check-circle-2" class="text-yellow-600 w-5 h-5"></i>
+                                WHOLE CLASS: Brownies
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Rules Footer -->
+            <footer class="mt-12 text-center border-t border-slate-200 pt-8">
+                <div class="flex flex-col items-center gap-5">
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <div class="flex items-center gap-2 text-blue-700 bg-blue-100 px-5 py-3 rounded-full border border-blue-200 shadow-sm font-bold text-sm md:text-base">
+                            <i data-lucide="handshake" class="w-6 h-6"></i>
+                            TOKENS ARE TRANSFERABLE & COMBINABLE!
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center justify-center gap-2 text-slate-500 font-bold uppercase tracking-widest text-xs md:text-sm">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                            Redemption: See Mr. Werkheiser before or after class
+                        </div>
+                        <p class="text-slate-400 text-xs italic mt-2">
+                            Pool your tokens together with classmates to unlock the high-tier rewards!
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Download Logic
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const btn = this;
+            const captureArea = document.getElementById('captureArea');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Generating...';
+            lucide.createIcons();
+
+            // Small delay to allow the loading state to show
+            setTimeout(() => {
+                html2canvas(captureArea, {
+                    scale: 2, // Double resolution for crisp print/image
+                    useCORS: true,
+                    backgroundColor: '#f1f5f9' // slate-100
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'Werkheiser-Reward-Chart.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    // Reset button
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="download" class="w-5 h-5"></i> Download as Image';
+                    lucide.createIcons();
+                }).catch(err => {
+                    console.error('Error generating image:', err);
+                    alert('Failed to generate image. Try again!');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-lucide="download" class="w-5 h-5"></i> Download as Image';
+                    lucide.createIcons();
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
 
